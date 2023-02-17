@@ -1,5 +1,6 @@
 # Custom 
 *.db
+*db
 
 # Fake dados
 fake_data.py

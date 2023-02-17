@@ -1,7 +1,6 @@
 version: '3.6'
 
 services:
-  
     api:
         build:
             context: ./
@@ -19,11 +18,8 @@ services:
             DB_SERVER: ${MYSQL_SERVER}
             DB_USER: ${MYSQL_USER}
             DB_PASSWORD: ${MYSQL_PASSWORD}
-            DB_HOST_CTI: ${MYSQL_HOST_CTI}
-            DB_HOST_ASTERISK: ${MYSQL_HOST_ASTERISK}
-            DB_DATABASE_CTI: ${MYSQL_DATABASE_CTI}
-            DB_DATABASE_ASTERISK: ${MYSQL_DATABASE_ASTERISK}
-        
+            DB_HOST: ${MYSQL_HOST}
+            DB_DATABASE: ${MYSQL_DATABASE}
     db:
         image: mariadb:10.9.4
         container_name: cronos_db
@@ -32,7 +28,7 @@ services:
             MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MARIADB_USER: ${MYSQL_USER}
             MARIADB_PASSWORD: ${MYSQL_PASSWORD}
-            MARIADB_DATABASE: ${MYSQL_DATABASE_CTI}
+            MARIADB_DATABASE: ${MYSQL_DATABASE}
         volumes:
             - "./db:/var/lib/mysql"
         ports:

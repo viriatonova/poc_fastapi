@@ -2,16 +2,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from api.settings import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_SERVER, DB_USER
 
 # Database MySQL
-DB_CTI = f"{DB_SERVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST_CTI}/{DB_DATABASE_CTI}"
-ENGINE_CTI = create_engine(DB_CTI)
-SESSION_CTI = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE_CTI)
+DB = f"{DB_SERVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
+ENGINE = create_engine(DB)
+SESSION = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
 BASE = declarative_base()
 
 
 def get_db():
-    db = SESSION_CTI()
+    db = SESSION()
     try:
         yield db
     finally:
