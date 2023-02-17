@@ -3,3 +3,4 @@ docker-compose.yml
 LICENSE
 .git
 .gitignore
+/venv
