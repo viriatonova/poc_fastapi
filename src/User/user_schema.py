@@ -5,8 +5,9 @@ from pydantic import BaseModel, validator
 
 class UserBase(BaseModel):
    id: int | None = None
+   username: str
    first_name: str
-   secondy_name: str
+   last_name: str
    email: str
    password: str
    active: bool
@@ -23,7 +24,9 @@ class UserBase(BaseModel):
       return field
 
 class UserRead(UserBase):
-    pass
+    class Config:
+        orm_mode = True
+        fields = {}
 
 class UserCreate(UserBase):
     class Config:
