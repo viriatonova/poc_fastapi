@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from api.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from sqlalchemy.orm import Session
 from src.User.user_model import User
-from src.User.user_schema import UserCreate, UserRead, UserUpdate
+from src.User.user_schema import UserCreate, UserRead, UserUpdate, Token
 from api.database import get_db
 from src.User.user_service import *
 
@@ -47,3 +49,21 @@ def delete_person(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User alread exist")
     else:
         return delete_db_user(db=db, id=id)    
+
+
+# Authentications Routes
+
+@router.post("/token", response_model=Token)
+async def get_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(db, form_data.email, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}

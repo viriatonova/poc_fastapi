@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
+from typing import Union
+
 
 
 class UserBase(BaseModel):
@@ -10,18 +12,12 @@ class UserBase(BaseModel):
    last_name: str
    email: str
    password: str
-   active: bool
-   created_at: datetime
-   excluded_at: datetime
+   active: bool | None = None
+   created_at: datetime | None = None
+   excluded_at: datetime | None = None
 
    class Config:
         pass
-
-   @validator('created_at', 'excluded_at')
-   def check_datetime(cls, field):
-      if field <= datetime.now():
-            raise ValueError('datetime_field must not be in the future')
-      return field
 
 class UserRead(UserBase):
     class Config:
@@ -43,3 +39,14 @@ class UserUpdate(UserBase):
             'id': {'exclude': True}, 'active': {'exclude': True},
             'created_at': {'exclude': True}, 'excluded_at': {'exclude': True}
         }
+
+# Token
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None
+
+
+        
