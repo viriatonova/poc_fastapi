@@ -59,7 +59,6 @@ def delete_person(id: int, db: Session = Depends(get_db)):
 @router.post("/token", response_model=Token)
 async def get_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
-    user_data = {"first_name": user.first_name, "last_name": user.last_name, "email": user.email, "username": user.username}
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -68,6 +67,6 @@ async def get_access_token(db: Session = Depends(get_db), form_data: OAuth2Passw
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"user": user_data}, expires_delta=access_token_expires
+        data={"user": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

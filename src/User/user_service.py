@@ -26,7 +26,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    email: Union[str, None] = None
+    username: Union[str, None] = None
 
 # Authentication
 
@@ -60,13 +60,13 @@ def authenticate_user(db: Session, username: str, password: str):
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("data")["username"]
+        username: str = payload.get("user")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    db_user = get_user_by_username(token_data.username, db)
+    db_user = get_user_by_username(db, token_data.username)
     if db_user is None:
         raise credentials_exception
     return db_user
