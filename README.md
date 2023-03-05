@@ -2,10 +2,15 @@
 
 ## Content
 
-1. [Dependencies](#dependencies)
-2. [Setup](#setup)
-3. [Usage](#usage)
-4. [Tests](#tests)
+1. [Documentation](#documentation)
+2. [Dependencies](#dependencies)
+3. [Setup](#setup)
+4. [Usage](#usage)
+5. [Tests](#tests)
+
+## Documentation
+
+* [Database schema](https://dbdiagram.io/d/63f36006296d97641d824880)
 
 ## Dependencies
 

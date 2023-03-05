@@ -14,6 +14,7 @@ class User(BASE):
     email = Column(String(255))
     password = Column(String(255))
     active = Column(Boolean, default=True)
-    checked = Column(Boolean, default=False)
+    #TODO feature: check e-mail msg:Camppo deve ser False por padrão para forçar check de usuário via email quando implementado
+    checked = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=func.now())
     excluded_at = Column(DateTime(timezone=True), nullable=True)

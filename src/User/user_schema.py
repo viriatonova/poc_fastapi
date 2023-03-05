@@ -1,9 +1,6 @@
 from datetime import datetime
 
 from pydantic import BaseModel
-from typing import Union
-
-
 
 class UserBase(BaseModel):
    id: int | None = None
@@ -39,14 +36,4 @@ class UserUpdate(UserBase):
             'id': {'exclude': True}, 'active': {'exclude': True},
             'created_at': {'exclude': True}, 'excluded_at': {'exclude': True}
         }
-
-# Token
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: Union[str, None] = None
-
-
         
