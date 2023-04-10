@@ -1,20 +1,19 @@
-from fastapi import HTTPException, status, Depends
-from api.exceptions import credentials_exception, inative_user
-from api.database import get_db
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-from src.User.user_model import User
-from src.User.user_schema import UserCreate
 from datetime import datetime, timedelta
-from sqlalchemy.exc import SQLAlchemyError
-from pydantic import BaseModel
 from typing import Union
 
-from jose import jwt, JWTError
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import Session
 
+from api.database import get_db
+from api.exceptions import credentials_exception, inative_user
 from api.settings import ALGORITHM, SECRET_KEY
+from src.User.user_model import User
+from src.User.user_schema import UserCreate
 
 pwd_context = CryptContext(schemes=['bcrypt'])
 
@@ -91,26 +90,25 @@ def get_user_by_username(db: Session, username: str):
     db_user = db.query(User).filter(User.username == username).first()
     return db_user
 
-async def create_db_user(db: Session, user: UserCreate):
-    async with db.begin():
-        try:
-            user.password = create_hash(user.password)
-            db_user = User(
-                username = user.username,
-                first_name = user.first_name,
-                last_name = user.last_name,
-                email = user.email,
-                password = user.password 
-            )
-            db.add(db_user)
-            db.commit()
-            db.refresh(db_user)
-            return db_user
-        except (IntegrityError) as error:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'A database error occurred: {error.orig}')
-        except SQLAlchemyError as error:
-            db.rollback()
-            raise HTTPException(status_code=400, detail=str(error))
+def create_db_user(db: Session, user: UserCreate):
+    try:
+        user.password = create_hash(user.password)
+        db_user = User(
+            username = user.username,
+            first_name = user.first_name,
+            last_name = user.last_name,
+            email = user.email,
+            password = user.password 
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except (IntegrityError) as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'A database error occurred: {error.orig}')
+    except SQLAlchemyError as error:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(error))
 
 def update_db_user(db: Session, user: UserCreate, id: int):
     db.query(User).filter(User.id == id).update(user)

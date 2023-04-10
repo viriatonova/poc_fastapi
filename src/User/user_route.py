@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from api.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from sqlalchemy.orm import Session
+
+from api.database import get_db
+from api.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from src.User.user_model import User
 from src.User.user_schema import UserCreate, UserRead, UserUpdate
-from api.database import get_db
 from src.User.user_service import *
-
 
 router = APIRouter()
 
@@ -33,8 +33,7 @@ def sing_up(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User alread exist")
     else:
-        db_user = create_db_user(user=user, db=db)
-        return db_user
+        return create_db_user(user=user, db=db)
     
 @router.patch("/person/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT, response_model=UserUpdate)
 def update_person(id: int, user: UserUpdate, db: Session = Depends(get_db)):

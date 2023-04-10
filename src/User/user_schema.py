@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+
 class UserBase(BaseModel):
    id: int | None = None
    username: str
@@ -14,16 +15,14 @@ class UserBase(BaseModel):
    excluded_at: datetime | None = None
 
    class Config:
-        pass
+        orm_mode = True
 
 class UserRead(UserBase):
     class Config:
-        orm_mode = True
         fields = {}
 
 class UserCreate(UserBase):
     class Config:
-        orm_mode = True
         fields = {
             'id': {'exclude': True}, 'active': {'exclude': True},
             'created_at': {'exclude': True}, 'excluded_at': {'exclude': True}
@@ -31,7 +30,6 @@ class UserCreate(UserBase):
         
 class UserUpdate(UserBase):
      class Config:
-        orm_mode = True
         fields = {
             'id': {'exclude': True}, 'active': {'exclude': True},
             'created_at': {'exclude': True}, 'excluded_at': {'exclude': True}
