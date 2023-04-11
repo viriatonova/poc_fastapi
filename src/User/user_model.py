@@ -1,5 +1,6 @@
 from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
                         func)
+from sqlalchemy.orm import relationship
 
 from api.database import BASE
 
@@ -18,3 +19,5 @@ class User(BASE):
     checked = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=func.now())
     excluded_at = Column(DateTime(timezone=True), nullable=True)
+
+    user_posts = relationship("Post", back_populates="user_owner")

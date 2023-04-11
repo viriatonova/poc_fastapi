@@ -2,10 +2,14 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+
 class BlogBase(BaseModel):
     id: int | None = None
     name: str
     url: str
+
+    class Config:
+        orm_mode = True
      
 class PostBase(BaseModel):
     id: int | None = None
@@ -21,16 +25,14 @@ class PostBase(BaseModel):
     updated_at: datetime | None = None
 
     class Config:
-            pass
+        orm_mode = True
 
 class PostRead(PostBase):
     class Config:
-        orm_mode = True
         fields = {}
 
 class PostCreate(PostBase):
     class Config:
-        orm_mode = True
         fields = {
             'id': {'exclude': True},
             'created_at': {'exclude': True}, 'updated_at': {'exclude': True}
@@ -38,7 +40,6 @@ class PostCreate(PostBase):
         
 class PostUpdate(PostBase):
      class Config:
-        orm_mode = True
         fields = {
             'id': {'exclude': True},
             'created_at': {'exclude': True}, 'updated_at': {'exclude': True}
