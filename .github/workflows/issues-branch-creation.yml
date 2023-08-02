@@ -1,0 +1,36 @@
+name: Create branch from issue
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ISSUE_NUMBER: ${{ github.event.issue.number }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        REPO_OWNER: ${{ github.event.repository.owner.login }}
+      run: |
+        issue_response=$(curl -s \
+                              -H "Authorization: token $GITHUB_TOKEN" \
+                              -H "Accept: application/vnd.github.v3+json" \
+                              https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues/$ISSUE_NUMBER)
+
+        issue_title=$(echo $issue_response | jq -r .title)
+        
+        branch_name=$(echo $issue_title | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+        
+        # Check if the label is 'auto-branch' or the issue is just opened
+        if [[ "${{ github.event.label.name }}" == "auto-branch" || "${{ github.event.action }}" == "opened" ]]; then
+          echo "Creating a new branch named $branch_name"
+          curl -s -X POST \
+               -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/git/refs \
+               -d '{"ref": "refs/heads/'"$branch_name"'", "sha": "'$(git rev-parse HEAD)'"}'
+        else
+          echo "The label is not 'auto-branch' or the issue is not new. Skipping branch creation."
+        fi
