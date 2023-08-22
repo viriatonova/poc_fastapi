@@ -5,21 +5,21 @@ from sqlalchemy.orm import Session
 from api.database import get_db
 from api.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from src.User.user_model import User
-from src.User.user_schema import UserCreate, UserRead, UserUpdate
+from src.User.user_schema import UserIn, UserOut
 from src.User.user_service import *
 
 router = APIRouter()
 
-@router.get("/user/me/", response_model=UserRead)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
+@router.get("/user/me/", response_model=UserOut)
+async def read_users_me(current_user: UserIn = Depends(get_current_active_user)):
     return current_user
 
-@router.get("/user", status_code=status.HTTP_200_OK, response_model=list[UserRead])
+@router.get("/user", status_code=status.HTTP_200_OK, response_model=list[UserOut])
 def read_users(db: Session = Depends(get_db)):
     db_user = get_all_user(db)
     return db_user
 
-@router.get("/user/{id}", status_code=status.HTTP_200_OK, response_model=UserRead)
+@router.get("/user/{id}", status_code=status.HTTP_200_OK, response_model=UserOut)
 def read_user(id: int, db: Session = Depends(get_db)):
     db_user = get_user_by_id(db, id=id)
     if not db_user:
@@ -27,16 +27,16 @@ def read_user(id: int, db: Session = Depends(get_db)):
     else:
         return db_user
 
-@router.post("/user", status_code=status.HTTP_201_CREATED, response_model=UserCreate)
-def sing_up(user: UserCreate, db: Session = Depends(get_db)):
+@router.post("/user", status_code=status.HTTP_201_CREATED, response_model=UserOut)
+def sing_up(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User alread exist")
     else:
         return create_db_user(user=user, db=db)
     
-@router.patch("/person/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT, response_model=UserUpdate)
-def update_person(id: int, user: UserUpdate, db: Session = Depends(get_db)):
+@router.patch("/person/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT, response_model=UserOut)
+def update_person(id: int, user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_id(db, id=id)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User dont't exist")
@@ -45,7 +45,7 @@ def update_person(id: int, user: UserUpdate, db: Session = Depends(get_db)):
         update_db_user(user=user_data, db=db, id=id)
         return {"Successfully updated"}
 
-@router.delete("/person/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=UserUpdate)
+@router.delete("/person/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=UserOut)
 def delete_person(id: int, db: Session = Depends(get_db)):
     db_user = get_user_by_id(db, id=id)
     if not db_user:

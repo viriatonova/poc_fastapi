@@ -1,6 +1,11 @@
 import os
+from dotenv import load_dotenv
+from os.path import join
 
-# Variáveis de ambiente
+# Using without docker
+ROOT_DIR = os.getcwd()
+ENV_PATH = join(ROOT_DIR, ".env")
+load_dotenv(dotenv_path=ENV_PATH)
 
 DEBUG = os.getenv("DEBUG")
 RELOAD = os.getenv("RELOAD") 

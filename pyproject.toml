@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "poc_fastapi"
+version = "0.0.1"
+description = ""
+authors = ["Viriato Nova <viriatosampaio@gmail.com>"]
+readme = "README.md"
+packages = [{include = "poc_fastapi"}]
+
+[tool.poetry.dependencies]
+python = ">3.10"
+fastapi = {extras = ["all"], version = "^0.101.1"}
+sqlalchemy = "^2.0.20"
+pymysql = "^1.1.0"
+python-jose = "^3.3.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20.0"
+ruff = "^0.0.285"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+select = [
+  "D",   # pydocstyle
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
+testpaths = [
+    "tests",
+]

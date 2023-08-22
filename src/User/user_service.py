@@ -13,7 +13,7 @@ from api.database import get_db
 from api.exceptions import credentials_exception, inative_user
 from api.settings import ALGORITHM, SECRET_KEY
 from src.User.user_model import User
-from src.User.user_schema import UserCreate
+from src.User.user_schema import UserIn
 
 pwd_context = CryptContext(schemes=['bcrypt'])
 
@@ -90,7 +90,7 @@ def get_user_by_username(db: Session, username: str):
     db_user = db.query(User).filter(User.username == username).first()
     return db_user
 
-def create_db_user(db: Session, user: UserCreate):
+def create_db_user(db: Session, user: UserIn):
     try:
         user.password = create_hash(user.password)
         db_user = User(
@@ -110,7 +110,7 @@ def create_db_user(db: Session, user: UserCreate):
         db.rollback()
         raise HTTPException(status_code=400, detail=str(error))
 
-def update_db_user(db: Session, user: UserCreate, id: int):
+def update_db_user(db: Session, user: UserIn, id: int):
     db.query(User).filter(User.id == id).update(user)
     db.commit()
     return None
